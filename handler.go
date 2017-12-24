@@ -2,14 +2,15 @@ package main
 
 import (
 	"errors"
-	"golang.org/x/net/context"
-	pb "github.com/EwanValentine/shippy/user-service/proto/user"
-	"golang.org/x/crypto/bcrypt"
 	"log"
+
+	pb "github.com/EwanValentine/shippy-user-service/proto/user"
+	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/net/context"
 )
 
 type service struct {
-	repo Repository
+	repo         Repository
 	tokenService Authable
 }
 

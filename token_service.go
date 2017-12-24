@@ -1,8 +1,8 @@
 package main
 
 import (
+	pb "github.com/EwanValentine/shippy-user-service/proto/user"
 	"github.com/dgrijalva/jwt-go"
-	pb "github.com/EwanValentine/shippy/user-service/proto/user"
 )
 
 var (
