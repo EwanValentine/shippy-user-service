@@ -5,7 +5,7 @@ build:
 
 run:
 	docker run -d --net="host" \
-		-p 50053:50051 \
+		-p 50051 \
 		-e DB_HOST=localhost \
 		-e DB_PASS=password \
 		-e DB_USER=postgres \
