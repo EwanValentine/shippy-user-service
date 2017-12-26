@@ -73,3 +73,11 @@ func TestCanDecodeToken(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestThrowsErrorIfTokenInvalid(t *testing.T) {
+	srv := newInstance()
+	_, err := srv.Decode("nope.nope.nope")
+	if err == nil {
+		t.Fail()
+	}
+}
