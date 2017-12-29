@@ -45,8 +45,6 @@ func main() {
 	// Get instance of the broker using our defaults
 	pubsub := srv.Server().Options().Broker
 
-	log.Println(pubsub)
-
 	// Register handler
 	pb.RegisterUserServiceHandler(srv.Server(), &service{repo, tokenService, pubsub})
 
