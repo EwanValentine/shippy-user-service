@@ -22,9 +22,8 @@ import math "math"
 import _ "google.golang.org/genproto/googleapis/api/annotations"
 
 import (
-	client "github.com/micro/go-micro/client"
-	server "github.com/micro/go-micro/server"
 	context "golang.org/x/net/context"
+	grpc "google.golang.org/grpc"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -192,81 +191,69 @@ func init() {
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
-var _ client.Option
-var _ server.Option
+var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
 
 // Client API for UserService service
 
 type UserServiceClient interface {
-	Create(ctx context.Context, in *User, opts ...client.CallOption) (*Response, error)
-	Get(ctx context.Context, in *User, opts ...client.CallOption) (*Response, error)
-	GetAll(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
-	Auth(ctx context.Context, in *User, opts ...client.CallOption) (*Token, error)
-	ValidateToken(ctx context.Context, in *Token, opts ...client.CallOption) (*Token, error)
+	Create(ctx context.Context, in *User, opts ...grpc.CallOption) (*Response, error)
+	Get(ctx context.Context, in *User, opts ...grpc.CallOption) (*Response, error)
+	GetAll(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
+	Auth(ctx context.Context, in *User, opts ...grpc.CallOption) (*Token, error)
+	ValidateToken(ctx context.Context, in *Token, opts ...grpc.CallOption) (*Token, error)
 }
 
 type userServiceClient struct {
-	c           client.Client
-	serviceName string
+	cc *grpc.ClientConn
 }
 
-func NewUserServiceClient(serviceName string, c client.Client) UserServiceClient {
-	if c == nil {
-		c = client.NewClient()
-	}
-	if len(serviceName) == 0 {
-		serviceName = "go.micro.srv.user"
-	}
-	return &userServiceClient{
-		c:           c,
-		serviceName: serviceName,
-	}
+func NewUserServiceClient(cc *grpc.ClientConn) UserServiceClient {
+	return &userServiceClient{cc}
 }
 
-func (c *userServiceClient) Create(ctx context.Context, in *User, opts ...client.CallOption) (*Response, error) {
-	req := c.c.NewRequest(c.serviceName, "UserService.Create", in)
+func (c *userServiceClient) Create(ctx context.Context, in *User, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
-	err := c.c.Call(ctx, req, out, opts...)
+	err := grpc.Invoke(ctx, "/go.micro.srv.user.UserService/Create", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) Get(ctx context.Context, in *User, opts ...client.CallOption) (*Response, error) {
-	req := c.c.NewRequest(c.serviceName, "UserService.Get", in)
+func (c *userServiceClient) Get(ctx context.Context, in *User, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
-	err := c.c.Call(ctx, req, out, opts...)
+	err := grpc.Invoke(ctx, "/go.micro.srv.user.UserService/Get", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) GetAll(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
-	req := c.c.NewRequest(c.serviceName, "UserService.GetAll", in)
+func (c *userServiceClient) GetAll(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
-	err := c.c.Call(ctx, req, out, opts...)
+	err := grpc.Invoke(ctx, "/go.micro.srv.user.UserService/GetAll", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) Auth(ctx context.Context, in *User, opts ...client.CallOption) (*Token, error) {
-	req := c.c.NewRequest(c.serviceName, "UserService.Auth", in)
+func (c *userServiceClient) Auth(ctx context.Context, in *User, opts ...grpc.CallOption) (*Token, error) {
 	out := new(Token)
-	err := c.c.Call(ctx, req, out, opts...)
+	err := grpc.Invoke(ctx, "/go.micro.srv.user.UserService/Auth", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) ValidateToken(ctx context.Context, in *Token, opts ...client.CallOption) (*Token, error) {
-	req := c.c.NewRequest(c.serviceName, "UserService.ValidateToken", in)
+func (c *userServiceClient) ValidateToken(ctx context.Context, in *Token, opts ...grpc.CallOption) (*Token, error) {
 	out := new(Token)
-	err := c.c.Call(ctx, req, out, opts...)
+	err := grpc.Invoke(ctx, "/go.micro.srv.user.UserService/ValidateToken", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -275,40 +262,135 @@ func (c *userServiceClient) ValidateToken(ctx context.Context, in *Token, opts .
 
 // Server API for UserService service
 
-type UserServiceHandler interface {
-	Create(context.Context, *User, *Response) error
-	Get(context.Context, *User, *Response) error
-	GetAll(context.Context, *Request, *Response) error
-	Auth(context.Context, *User, *Token) error
-	ValidateToken(context.Context, *Token, *Token) error
+type UserServiceServer interface {
+	Create(context.Context, *User) (*Response, error)
+	Get(context.Context, *User) (*Response, error)
+	GetAll(context.Context, *Request) (*Response, error)
+	Auth(context.Context, *User) (*Token, error)
+	ValidateToken(context.Context, *Token) (*Token, error)
 }
 
-func RegisterUserServiceHandler(s server.Server, hdlr UserServiceHandler, opts ...server.HandlerOption) {
-	s.Handle(s.NewHandler(&UserService{hdlr}, opts...))
+func RegisterUserServiceServer(s *grpc.Server, srv UserServiceServer) {
+	s.RegisterService(&_UserService_serviceDesc, srv)
 }
 
-type UserService struct {
-	UserServiceHandler
+func _UserService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/go.micro.srv.user.UserService/Create",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Create(ctx, req.(*User))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-func (h *UserService) Create(ctx context.Context, in *User, out *Response) error {
-	return h.UserServiceHandler.Create(ctx, in, out)
+func _UserService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Get(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/go.micro.srv.user.UserService/Get",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Get(ctx, req.(*User))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-func (h *UserService) Get(ctx context.Context, in *User, out *Response) error {
-	return h.UserServiceHandler.Get(ctx, in, out)
+func _UserService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/go.micro.srv.user.UserService/GetAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetAll(ctx, req.(*Request))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-func (h *UserService) GetAll(ctx context.Context, in *Request, out *Response) error {
-	return h.UserServiceHandler.GetAll(ctx, in, out)
+func _UserService_Auth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Auth(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/go.micro.srv.user.UserService/Auth",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Auth(ctx, req.(*User))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-func (h *UserService) Auth(ctx context.Context, in *User, out *Token) error {
-	return h.UserServiceHandler.Auth(ctx, in, out)
+func _UserService_ValidateToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Token)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ValidateToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/go.micro.srv.user.UserService/ValidateToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ValidateToken(ctx, req.(*Token))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
-func (h *UserService) ValidateToken(ctx context.Context, in *Token, out *Token) error {
-	return h.UserServiceHandler.ValidateToken(ctx, in, out)
+var _UserService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "go.micro.srv.user.UserService",
+	HandlerType: (*UserServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Create",
+			Handler:    _UserService_Create_Handler,
+		},
+		{
+			MethodName: "Get",
+			Handler:    _UserService_Get_Handler,
+		},
+		{
+			MethodName: "GetAll",
+			Handler:    _UserService_GetAll_Handler,
+		},
+		{
+			MethodName: "Auth",
+			Handler:    _UserService_Auth_Handler,
+		},
+		{
+			MethodName: "ValidateToken",
+			Handler:    _UserService_ValidateToken_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "proto/user/user.proto",
 }
 
 func init() { proto.RegisterFile("proto/user/user.proto", fileDescriptor0) }

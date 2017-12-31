@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/EwanValentine/shippy-user-service/api"
 	pb "github.com/EwanValentine/shippy-user-service/proto/user"
 	"github.com/micro/go-micro"
 	_ "github.com/micro/go-plugins/registry/mdns"
@@ -45,6 +46,8 @@ func main() {
 
 	// Register handler
 	pb.RegisterUserServiceHandler(srv.Server(), &service{repo, tokenService, publisher})
+
+	go api.Init()
 
 	// Run the server
 	if err := srv.Run(); err != nil {

@@ -2,12 +2,41 @@ syntax = "proto3";
 
 package go.micro.srv.user;
 
+import "google/api/annotations.proto";
+
 service UserService {
-    rpc Create(User) returns (Response) {}
-    rpc Get(User) returns (Response) {}
-    rpc GetAll(Request) returns (Response) {}
-    rpc Auth(User) returns (Token) {}
-    rpc ValidateToken(Token) returns (Token) {}
+    rpc Create(User) returns (Response) {
+      option (google.api.http) = {
+        post: "/api/v1/users"
+        body: "*"
+      };
+    }
+
+    rpc Get(User) returns (Response) {
+      option (google.api.http) = {
+        get: "/api/v1/users/{id}"
+      };
+    }
+
+    rpc GetAll(Request) returns (Response) {
+      option (google.api.http) = {
+        get: "/api/v1/users"
+      };
+    }
+
+    rpc Auth(User) returns (Token) {
+      option (google.api.http) = {
+        post: "/api/v1/auth"
+        body: "*"
+      };
+    }
+
+    rpc ValidateToken(Token) returns (Token) {
+      option (google.api.http) = {
+        post: "/api/v1/validate"
+        body: "*"
+      };
+    }
 }
 
 message User {
