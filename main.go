@@ -1,10 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"time"
 
-	"github.com/EwanValentine/shippy-user-service/api"
 	pb "github.com/EwanValentine/shippy-user-service/proto/user"
 	"github.com/micro/go-micro"
 	_ "github.com/micro/go-plugins/registry/mdns"
@@ -36,7 +35,8 @@ func main() {
 
 		// This name must match the package name given in your protobuf definition
 		micro.Name("go.micro.srv.user"),
-		micro.Version("latest"),
+		micro.RegisterTTL(time.Second*30),
+		micro.RegisterInterval(time.Second*10),
 	)
 
 	// Init will parse the command line flags.
@@ -47,10 +47,8 @@ func main() {
 	// Register handler
 	pb.RegisterUserServiceHandler(srv.Server(), &service{repo, tokenService, publisher})
 
-	go api.Init()
-
 	// Run the server
 	if err := srv.Run(); err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 }

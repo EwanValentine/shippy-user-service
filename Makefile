@@ -1,16 +1,16 @@
 build:
 	# This builds out our go-micro generated code, but imports
 	# grpc-gateway so the new metadata can be understood.
-	protoc -I. \
+	protoc -I/usr/local/include -I. \
+		--go_out=plugins=micro:$(GOPATH)/src/github.com/EwanValentine/shippy-user-service \
 		-I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
-		--go_out=plugins=micro:. \
 		proto/user/user.proto
 
 	# This builds out the auto-generated API code, into a directory called 'api'.
 	protoc -I/usr/local/include -I. \
 		-I$(GOPATH)/src \
 	  -I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
-	  --grpc-gateway_out=logtostderr=true:$(GOPATH)/src/github.com/EwanValentine/shippy-user-service/api \
+	  --grpc-gateway_out=logtostderr=true:$(GOPATH)/src/github.com/EwanValentine/shippy-user-api \
 	  proto/user/user.proto
 
 	# This builds out a non go-micro gRPC layer. We need to generate this as well
@@ -19,20 +19,20 @@ build:
 	protoc -I/usr/local/include -I. \
 	  -I$(GOPATH)/src \
 	  -I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
-	  --go_out=plugins=grpc:$(GOPATH)/src/github.com/EwanValentine/shippy-user-service/api \
+	  --go_out=plugins=grpc:$(GOPATH)/src/github.com/EwanValentine/shippy-user-api \
 	  proto/user/user.proto
 
 	# This generates swagger files, totally optional, but nice for a REST api, right?
 	protoc -I/usr/local/include -I. \
 	  -I$(GOPATH)/src \
 	  -I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
-	  --swagger_out=logtostderr=true:$(GOPATH)/src/github.com/EwanValentine/shippy-user-service/api \
+	  --swagger_out=logtostderr=true:$(GOPATH)/src/github.com/EwanValentine/shippy-user-api \
 		proto/user/user.proto
 
 	docker build -t shippy-user-service .
 
 run:
-	docker run -d --net="host" \
+	docker run --net="host" \
 		-p 50051 \
 		-e DB_HOST=localhost \
 		-e DB_PASS=password \
