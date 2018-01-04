@@ -5,6 +5,7 @@ import (
 	"time"
 
 	pb "github.com/EwanValentine/shippy-user-service/proto/user"
+	grpc "github.com/micro/go-grpc"
 	"github.com/micro/go-micro"
 	_ "github.com/micro/go-plugins/registry/mdns"
 )
@@ -31,7 +32,7 @@ func main() {
 	tokenService := &TokenService{repo}
 
 	// Create a new service. Optionally include some options here.
-	srv := micro.NewService(
+	srv := grpc.NewService(
 
 		// This name must match the package name given in your protobuf definition
 		micro.Name("go.micro.srv.user"),
