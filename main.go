@@ -2,10 +2,8 @@ package main
 
 import (
 	"log"
-	"time"
 
-	pb "github.com/EwanValentine/shippy-user-service/proto/user"
-	grpc "github.com/micro/go-grpc"
+	pb "github.com/EwanValentine/shippy-user-service/proto/auth"
 	"github.com/micro/go-micro"
 	_ "github.com/micro/go-plugins/registry/mdns"
 )
@@ -32,12 +30,10 @@ func main() {
 	tokenService := &TokenService{repo}
 
 	// Create a new service. Optionally include some options here.
-	srv := grpc.NewService(
+	srv := micro.NewService(
 
 		// This name must match the package name given in your protobuf definition
-		micro.Name("go.micro.srv.user"),
-		micro.RegisterTTL(time.Second*30),
-		micro.RegisterInterval(time.Second*10),
+		micro.Name("go.micro.srv.auth"),
 	)
 
 	// Init will parse the command line flags.
@@ -46,7 +42,7 @@ func main() {
 	publisher := micro.NewPublisher("user.created", srv.Client())
 
 	// Register handler
-	pb.RegisterUserServiceHandler(srv.Server(), &service{repo, tokenService, publisher})
+	pb.RegisterAuthHandler(srv.Server(), &service{repo, tokenService, publisher})
 
 	// Run the server
 	if err := srv.Run(); err != nil {
