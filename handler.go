@@ -72,7 +72,14 @@ func (srv *service) Create(ctx context.Context, req *pb.User, res *pb.Response) 
 		return errors.New(fmt.Sprintf("error creating user: %v", err))
 	}
 
+	token, err := srv.tokenService.Encode(req)
+	if err != nil {
+		return err
+	}
+
 	res.User = req
+	res.Token = &pb.Token{Token: token}
+
 	/*
 		if err := srv.Publisher.Publish(ctx, req); err != nil {
 			return errors.New(fmt.Sprintf("error publishing event: %v", err))

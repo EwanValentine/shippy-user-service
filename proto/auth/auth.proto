@@ -16,6 +16,7 @@ message User {
     string company = 3;
     string email = 4;
     string password = 5;
+    string token = 6;
 }
 
 message Request {}
@@ -24,6 +25,7 @@ message Response {
     User user = 1;
     repeated User users = 2;
     repeated Error errors = 3;
+    Token token = 4;
 }
 
 message Token {
