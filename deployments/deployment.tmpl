@@ -1,0 +1,37 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+  template:
+    metadata:
+      labels:
+        app: user
+    spec:
+        containers:
+        - name: user-service
+          image: ewanvalentine/user:latest
+          imagePullPolicy: Always
+          command: [
+            "./shippy-user-service",
+            "--selector=static",
+            "--server_address=:8080"
+          ]
+          env:
+          - name: DB_HOST
+            value: "postgres:5432"
+          - name: DB_NAME
+            value: "postgres"
+          - name: DB_PASS
+            value: "password"
+          - name: DB_USER
+            value: "postgres"
+          - name: UPDATED_AT
+            value: "{{ UPDATED_AT }}"
+          ports:
+          - containerPort: 8080
+            name: user-port
