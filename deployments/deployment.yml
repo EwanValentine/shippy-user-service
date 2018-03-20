@@ -31,7 +31,7 @@ spec:
           - name: DB_USER
             value: "postgres"
           - name: UPDATED_AT
-            value: "Tue 20 Mar 2018 00:19:32 GMT"
+            value: "Tue 20 Mar 2018 08:53:19 GMT"
           ports:
           - containerPort: 8080
             name: user-port

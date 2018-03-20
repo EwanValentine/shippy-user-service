@@ -34,7 +34,7 @@ func main() {
 	srv := k8s.NewService(
 
 		// This name must match the package name given in your protobuf definition
-		micro.Name("auth"),
+		micro.Name("shippy.auth"),
 	)
 
 	// Init will parse the command line flags.
